@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qureo &amp; SPX Auto Completer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icon.svg" alt="" class="logo" />
+        <div>
+          <h1>Qureo &amp; SPX Auto</h1>
+          <span class="subtitle">Shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd></span>
+        </div>
+      </div>
+      <span class="version-pill">v4.0</span>
+    </header>
+
+    <section id="permissionBanner" class="banner banner-warn hidden">
+      <div class="banner-text">
+        <strong>Permission Required</strong>
+        <span>Grant site access for Qureo &amp; SPX Learning Square.</span>
+      </div>
+      <button id="grantPermissionBtn" class="btn btn-primary btn-sm">Grant Access</button>
+    </section>
+
+    <section class="context-card">
+      <div class="context-row">
+        <span id="contextDot" class="status-dot"></span>
+        <div class="context-info">
+          <div id="contextTitle" class="context-title">Checking tab...</div>
+          <div id="contextSubtitle" class="context-subtitle">Open Qureo or SPX Learning Square</div>
+        </div>
+      </div>
+
+      <div class="jump-row">
+        <input
+          id="chapterJumpInput"
+          type="number"
+          min="1"
+          placeholder="Chapter #"
+          aria-label="Target ID"
+        />
+        <button id="chapterJumpBtn" class="btn btn-ghost btn-sm" title="Navigate to target">Go</button>
+        <button id="chapterJumpRunBtn" class="btn btn-secondary btn-sm" title="Navigate and run automation">Go &amp; Run</button>
+      </div>
+    </section>
+
+    <section class="actions">
+      <div id="lectureChoiceBanner" class="hint-note hidden">
+        On a single lecture page—run just this lecture or the whole chapter:
+      </div>
+
+      <button id="runFullBtn" class="btn btn-primary btn-block">
+        Run Full Automation
+      </button>
+
+      <button id="runFullChapterBtn" class="btn btn-secondary btn-block hidden">
+        Complete Full Chapter &amp; Review
+      </button>
+
+      <div class="actions-grid">
+        <button id="runLecturesBtn" class="btn btn-secondary">Lectures Only</button>
+        <button id="runReviewBtn" class="btn btn-secondary">Solve Test Only</button>
+      </div>
+
+      <button id="stopBtn" class="btn btn-danger btn-block hidden">
+        Stop Automation
+      </button>
+    </section>
+
+    <section id="progressCard" class="progress-card hidden">
+      <div class="progress-header">
+        <div class="progress-title-group">
+          <span id="statusBadge" class="pill">Idle</span>
+          <span id="phaseText" class="phase-text">—</span>
+        </div>
+        <span id="elapsedText" class="elapsed-text">00:00</span>
+      </div>
+
+      <div id="progressMessage" class="progress-message">Ready</div>
+
+      <div class="progress-bar-row">
+        <div class="progress-track">
+          <div id="progressBarFill" class="progress-fill"></div>
+        </div>
+        <span id="progressCountText" class="progress-count">0/0</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-val" id="statLectures">0</span>
+          <span class="stat-lbl" id="statLbl1">Lectures</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val" id="statSkipped">0</span>
+          <span class="stat-lbl" id="statLbl2">Skipped</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val" id="statAnswers">0</span>
+          <span class="stat-lbl" id="statLbl3">Answers</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val" id="statChapters">0</span>
+          <span class="stat-lbl" id="statLbl4">Chapters</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button id="tabLogBtn" class="tab active">Activity Log</button>
+      <button id="tabSettingsBtn" class="tab">Settings</button>
+    </nav>
+
+    <section id="logPanel" class="panel">
+      <div class="panel-toolbar">
+        <span class="panel-hint">Recent events</span>
+        <div class="panel-btns">
+          <button id="copyLogBtn" class="btn btn-ghost btn-xs">Copy</button>
+          <button id="clearLogBtn" class="btn btn-ghost btn-xs">Clear</button>
+        </div>
+      </div>
+      <div id="logContainer" class="log-box">
+        <div class="log-empty">No activity yet.</div>
+      </div>
+    </section>
+
+    <section id="settingsPanel" class="panel hidden">
+      <div class="settings-list">
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">Auto-advance to next chapter (Qureo)</span>
+            <span class="setting-desc">Navigate to chapter N+1 after solving test</span>
+          </div>
+          <input id="optAutoAdvance" type="checkbox" />
+        </label>
+
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">Chain multiple chapters (Qureo)</span>
+            <span class="setting-desc">Automatically continue full automation on next chapter</span>
+          </div>
+          <input id="optAutoChain" type="checkbox" />
+        </label>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-name">Max chapters per chain</span>
+            <span class="setting-desc">0 = continue until end of unit</span>
+          </div>
+          <input id="optMaxChainChapters" type="number" min="0" max="100" class="num-input" />
+        </div>
+
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">Smart skip opened/done lectures (Qureo)</span>
+            <span class="setting-desc">Only opens background tab if lecture returns 404</span>
+          </div>
+          <input id="optSmartSkip" type="checkbox" />
+        </label>
+
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">Focus tab briefly on 404 retry (Qureo)</span>
+            <span class="setting-desc">Wakes background-throttled lecture pages if needed</span>
+          </div>
+          <input id="optFocusOn404" type="checkbox" />
+        </label>
+
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">Show in-page floating HUD</span>
+            <span class="setting-desc">Displays live progress &amp; stop button on the page</span>
+          </div>
+          <input id="optShowHud" type="checkbox" />
+        </label>
+
+        <label class="setting-toggle">
+          <div>
+            <span class="setting-name">One-click toolbar mode</span>
+            <span class="setting-desc">Icon click starts immediately (use HUD Panel or Alt+Shift+Q to reopen settings)</span>
+          </div>
+          <input id="optOneClickMode" type="checkbox" />
+        </label>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-name">Lecture init wait (ms)</span>
+            <span class="setting-desc">Min wait for unopened Qureo lecture pages</span>
+          </div>
+          <input id="optLectureLoadWait" type="number" min="500" max="20000" step="250" class="num-input" />
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-name">Tab settle delay (ms)</span>
+            <span class="setting-desc">Wait after page reloads</span>
+          </div>
+          <input id="optTabSettleDelay" type="number" min="200" max="15000" step="100" class="num-input" />
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-name">API request delay (ms)</span>
+            <span class="setting-desc">Throttle delay between requests</span>
+          </div>
+          <input id="optApiDelay" type="number" min="0" max="10000" step="50" class="num-input" />
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <span class="setting-name">Parallel concurrency</span>
+            <span class="setting-desc">Simultaneous API requests (1–8)</span>
+          </div>
+          <input id="optConcurrency" type="number" min="1" max="8" step="1" class="num-input" />
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button id="resetSettingsBtn" class="btn btn-ghost btn-sm">Reset Defaults</button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

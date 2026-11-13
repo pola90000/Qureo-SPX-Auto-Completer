@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Qureo & SPX Auto Completer (Firefox)",
+  "version": "4.0.0",
+  "description": "Auto-completes Qureo lectures/tests and SPX Learning Square chapters/reviews with concurrent API execution, live progress tracking, and full controls.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "qureo-auto-completer@example.com",
+      "strict_min_version": "112.0"
+    }
+  },
+  "icons": {
+    "48": "icon.svg",
+    "96": "icon.svg"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs",
+    "cookies",
+    "webRequest",
+    "webRequestBlocking",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.qureo.education/*",
+    "*://*.spx-learning-square.com/*"
+  ],
+  "action": {
+    "default_icon": "icon.svg",
+    "default_title": "Qureo & SPX Auto Completer",
+    "default_popup": "popup.html"
+  },
+  "commands": {
+    "run-full-automation": {
+      "suggested_key": {
+        "default": "Alt+Shift+Q"
+      },
+      "description": "Start or stop automation on the active Qureo or SPX tab"
+    }
+  },
+  "background": {
+    "scripts": ["src/background/main.js"],
+    "type": "module"
+  }
+}
