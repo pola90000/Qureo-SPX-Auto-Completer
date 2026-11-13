@@ -68,4 +68,3 @@ Qureo-solver/
 - **Show in-page floating HUD**: Toggles the floating overlay on supported pages.
 - **One-click toolbar mode**: Clicking the toolbar icon starts/stops automation immediately instead of opening the popup.
 - **Timing controls**: Configure **Lecture init wait (ms)**, **Tab settle delay (ms)**, and **API request delay (ms)**.
-```
